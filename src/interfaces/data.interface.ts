@@ -1,5 +1,5 @@
 export interface Points {
-  x: string;
+  x: number;
   y: number;
 }
 

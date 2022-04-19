@@ -1,6 +1,14 @@
 import { Points, Data, SciComponent } from "../interfaces/data.interface";
 import { Pirds } from "../interfaces/pirds.interface";
 
+// Currently every component that requests data does so in full.
+// This needs to be optimized to reduce resource load at high fresh rates 
+// and/or high number of data points. For example:
+// 1. Dropping a lot of data that was transmitted.
+// 2. Inefficient to parse the string to Date.
+// 3. Cache the data and fetch only the delta data, not the entire time window.
+// 4. Aggregate requests.
+
 class DataService {
   updateRate = 5000;
   components: Set<SciComponent>;
@@ -64,14 +72,16 @@ class DataService {
     }
     let points: Points[] = [];
     for (let i = 0; i < data.length; i++) {
-      const p: Points = { x: data[i].time, y: data[i].val }
+      const p: Points = {
+        x: Date.parse(data[i].time),
+        y: data[i].val
+      };
       points.push(p);
     }
     return points;
   }
 
   async getData(table: string, startTime: string, endTime: string): Promise<any>{
-    // TODO: CORS
     try {
       const query = `${this.api}/${table}/${startTime}/${endTime}`;
       const res = await fetch(query);

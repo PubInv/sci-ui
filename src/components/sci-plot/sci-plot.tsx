@@ -105,8 +105,8 @@ export class SciPlot implements SciComponent {
 
     const lineGenerator = d3
       .line<Points>()
-      .defined(d => { return d !== null; })
-      .x(d => { return xScale(Date.parse(d.x)) }) // <<< Parsing strings to dates is slow!
+      .defined(d => { return d !== null; }) // TODO: doesnt work
+      .x(d => { return xScale(d.x) })
       .y(d => { return yScale(d.y) });
 
     this.svg
