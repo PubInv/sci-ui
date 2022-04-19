@@ -1,12 +1,8 @@
 import { MyData, SciComponent } from "../interfaces/data.interface";
 import { Pirds } from "../interfaces/pirds.interface";
 
-
-
-class DataServiceController {
-  public myData: MyData[];
+class DataService {
   updateRate = 5000;
-  sources: string[];
   components: Set<SciComponent>;
 
   numComponents = 0;
@@ -47,9 +43,9 @@ class DataServiceController {
     ).toISOString();
     const endTime = new Date().toISOString();
 
-    let x = 0;
+    // let x = 0;
     this.components.forEach(c => {
-      console.log("x: ", ++x);
+      // console.log("x: ", ++x);
       this.getData(c, c.source, startTime, endTime); //async
         // console.log("Data1: ", data);
         // const processedData = this.processData(data);
@@ -86,4 +82,4 @@ class DataServiceController {
   }
 }
 
-export const MyDataServiceController = new DataServiceController();
+export const MyDataServiceController = new DataService();

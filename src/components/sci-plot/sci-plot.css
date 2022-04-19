@@ -5,3 +5,12 @@
 .chart {
   background-color: lightgray;
 }
+
+.left {
+  display:inline-block;
+}
+
+.right {
+  display: inline-block;
+  vertical-align: top;
+}

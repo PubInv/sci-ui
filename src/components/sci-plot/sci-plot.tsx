@@ -1,4 +1,4 @@
-import { Element, Component, Host, Prop, h } from "@stencil/core";
+import { Element, Component, Host, Prop, h, State } from "@stencil/core";
 import { select } from "d3-selection";
 import * as d3 from "d3";
 import { MyData, SciComponent } from "../../interfaces/data.interface";
@@ -13,7 +13,7 @@ export class SciPlot implements SciComponent {
   @Element() element: HTMLElement;
   @Prop() width: number = 600;
   @Prop() height: number = 600;
-  @Prop() source: string;
+  @Prop() source!: string;
   @Prop() lineColor: string = "red";
   @Prop() timeViewMinutes: number = 2;
   margin_percent = 0.1;
@@ -24,30 +24,43 @@ export class SciPlot implements SciComponent {
     left: this.width*this.margin_percent
   };
   svg;
+  @State() hasData: number = 0;
+  @State() localData: any;
+  numRenders = 0;
 
   constructor() {
     console.log("SciPlot source: ", this.source);
   }
 
   update(data: any) {
-    this.draw(data);
+    console.log("Updating");
+    this.localData = data;
+    // this.draw(data);
+  }
+
+  componentWillLoad() {
+    MyDataServiceController.registerComponent(this);
+    // console.log("Component will load");
   }
 
   componentDidLoad() {
-    
-    MyDataServiceController.registerComponent(this);
-
     this.svg = select(this.element.shadowRoot.querySelectorAll(".chart")[0])
       .attr("width", this.width + this.margin.left + this.margin.right)
       .attr("height", this.height + this.margin.top + this.margin.bottom)
       .append("g")
       .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
 
-    console.log("Component did load");
-    this.draw(null);
+      // console.log("Component did load");
+  }
+
+  componentWillRender() {
+    // Render updates here
+    console.log("Component will render", ++this.numRenders);
+    this.draw(this.localData);
   }
 
   disconnectedCallback() {
+    // This isn't called
     console.log("Component disconnected");
     MyDataServiceController.deregisterComponent(this);
   }
@@ -56,22 +69,17 @@ export class SciPlot implements SciComponent {
     // console.log("Drawing data: ", data);
     if (data == null || data.length === 0) {
       // TODO: handle no data case
-      console.warn("No data to draw!");
+      // console.warn("No data to draw!");
+      this.hasData = 0;
       return;
     }
+    this.hasData = 1;
 
     const startTime = new Date(Date.now() - this.timeViewMinutes * 1000 * 60);
     const endTime = new Date();
 
-    // console.log("startTime: ", startTime);
-    // console.log("endTime: ", endTime);
-
-    const initialYMin = d3.min(data, function (d) {
-      return d.y;
-    });
-    const initialYMax = d3.max(data, function (d) {
-      return d.y;
-    });
+    const initialYMin = d3.min(data, d => { return d.y; });
+    const initialYMax = d3.max(data, d => { return d.y; });
 
     const xScale = d3
       .scaleTime()
@@ -108,11 +116,9 @@ export class SciPlot implements SciComponent {
 
     const lineGenerator = d3
       .line<MyData>()
-      .defined(function(d) {
-        return d !== null;
-      })
-      .x(function (d) { return xScale(Date.parse(d.x)) })
-      .y(function (d) { return yScale(d.y) });
+      .defined(d => { return d !== null; })
+      .x(d => { return xScale(Date.parse(d.x)) })
+      .y(d => { return yScale(d.y) });
 
     this.svg
       .append("path")
@@ -125,7 +131,19 @@ export class SciPlot implements SciComponent {
   render() {
     return (
       <Host>
-        <svg class="chart" />
+        <div>
+          <div class="left">
+            <svg class="chart" />
+          </div>
+          <div class="right">
+            <ul>
+              <li>Source: {this.source}</li>
+              <li>TimeViewMinutes: {this.timeViewMinutes}</li>
+              <li>LineColor: {this.lineColor}</li>
+              <li>HasData: {this.hasData}</li>
+            </ul>
+          </div>
+        </div>
       </Host>
     );
   }

@@ -29,7 +29,7 @@ declare namespace LocalJSX {
     interface SciPlot {
         "height"?: number;
         "lineColor"?: string;
-        "source"?: string;
+        "source": string;
         "timeViewMinutes"?: number;
         "width"?: number;
     }
