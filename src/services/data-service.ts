@@ -14,6 +14,7 @@ class DataService {
   components: Set<SciComponent>;
   private api = "http://localhost:3020/api";
   numComponents = 0;
+  private timeViewSeconds: number = 120;
 
   constructor() {
     this.components = new Set<SciComponent>();
@@ -26,17 +27,25 @@ class DataService {
   registerComponent(source: SciComponent) {
     this.components.add(source);
     this.numComponents++;
-    console.log("numComponents: ", this.numComponents);
+    console.log("numComponents++: ", this.numComponents);
   }
 
   deregisterComponent(source: SciComponent) {
     if (this.components.has(source)) {
       this.components.delete(source);
       this.numComponents--;
-      console.log("numComponents: ", this.numComponents);
+      console.log("numComponents--: ", this.numComponents);
     } else {
       console.error("No component to delete!");
     }
+  }
+
+  setTimeWindow(seconds: number) {
+    this.timeViewSeconds = seconds;
+  }
+
+  setApiUrl(url: string) {
+    this.api = url;
   }
 
   updateComponents() {
@@ -45,8 +54,7 @@ class DataService {
       return;
     }
 
-    const timeViewMinutes = 2;
-    const startTime = new Date(Date.now() - timeViewMinutes * 1000 * 60);
+    const startTime = new Date(Date.now() - this.timeViewSeconds * 1000);
     const endTime = new Date();
 
     this.components.forEach(async c => {
@@ -55,7 +63,7 @@ class DataService {
       const data: Data = {
         startTime,
         endTime,
-        timeViewMinutes,
+        timeViewMinutes: this.timeViewSeconds,
         points
       }
       c.update(data);
