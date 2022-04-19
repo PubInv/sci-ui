@@ -43,13 +43,14 @@ class DataService {
     ).toISOString();
     const endTime = new Date().toISOString();
 
-    // let x = 0;
+    this.components.forEach(async c => {
+      const data = await this.getData(c.source, startTime, endTime);
+      const processed = this.processData(data);
+      c.update(processed);    
+    });
+
     this.components.forEach(c => {
-      // console.log("x: ", ++x);
-      this.getData(c, c.source, startTime, endTime); //async
-        // console.log("Data1: ", data);
-        // const processedData = this.processData(data);
-        // c.update(processedData);      
+      c.draw();
     });
   }
 
@@ -65,20 +66,18 @@ class DataService {
     return newstuff;
   }
 
-  getData(c: SciComponent, table: string, startTime: string, endTime: string) {
+  async getData(table: string, startTime: string, endTime: string): Promise<any>{
     // TODO: CORS
-    const api = "http://localhost:3020/api";
-    const query = `${api}/${table}/${startTime}/${endTime}`;
-    fetch(query)
-      .then((response) => response.json())
-      .then((data) => {
-        // console.log("DATA: ", data);
-        const processedData = this.processData(data);
-        c.update(processedData);  
-      })
-      .catch((error) => {
-        console.warn(error);
-      });
+    try {
+      const api = "http://localhost:3020/api";
+      const query = `${api}/${table}/${startTime}/${endTime}`;
+      const res = await fetch(query);
+      const data = await res.json();
+      return data;
+    } catch(error) {
+      console.error(error);
+      return;
+    }
   }
 }
 

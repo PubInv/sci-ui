@@ -25,7 +25,7 @@ export class SciPlot implements SciComponent {
   };
   svg;
   @State() hasData: number = 0;
-  @State() localData: any;
+  localData: any;
   numRenders = 0;
 
   constructor() {
@@ -56,7 +56,7 @@ export class SciPlot implements SciComponent {
   componentWillRender() {
     // Render updates here
     console.log("Component will render", ++this.numRenders);
-    this.draw(this.localData);
+    // this.draw(this.localData);
   }
 
   disconnectedCallback() {
@@ -65,7 +65,9 @@ export class SciPlot implements SciComponent {
     MyDataServiceController.deregisterComponent(this);
   }
 
-  draw(data: MyData[]) {
+  // draw(data: MyData[]) {
+  draw() {
+    const data = this.localData;
     // console.log("Drawing data: ", data);
     if (data == null || data.length === 0) {
       // TODO: handle no data case
@@ -117,7 +119,7 @@ export class SciPlot implements SciComponent {
     const lineGenerator = d3
       .line<MyData>()
       .defined(d => { return d !== null; })
-      .x(d => { return xScale(Date.parse(d.x)) })
+      .x(d => { return xScale(Date.parse(d.x)) }) // <<< Parsing strings to dates is slow!
       .y(d => { return yScale(d.y) });
 
     this.svg
