@@ -1,7 +1,7 @@
 import { Element, Component, Host, Prop, h, State } from "@stencil/core";
 import { select } from "d3-selection";
 import * as d3 from "d3";
-import { MyData, SciComponent } from "../../interfaces/data.interface";
+import { Points, Data, SciComponent } from "../../interfaces/data.interface";
 import { MyDataServiceController } from "../../services/data-service";
 
 @Component({
@@ -25,17 +25,15 @@ export class SciPlot implements SciComponent {
   };
   svg;
   @State() hasData: number = 0;
-  localData: any;
-  numRenders = 0;
+  data: Data;
 
   constructor() {
     console.log("SciPlot source: ", this.source);
   }
 
-  update(data: any) {
-    console.log("Updating");
-    this.localData = data;
-    // this.draw(data);
+  update(data: Data) {
+    // console.log("Updating");
+    this.data = data;
   }
 
   componentWillLoad() {
@@ -53,23 +51,15 @@ export class SciPlot implements SciComponent {
       // console.log("Component did load");
   }
 
-  componentWillRender() {
-    // Render updates here
-    console.log("Component will render", ++this.numRenders);
-    // this.draw(this.localData);
-  }
-
   disconnectedCallback() {
     // This isn't called
     console.log("Component disconnected");
     MyDataServiceController.deregisterComponent(this);
   }
 
-  // draw(data: MyData[]) {
   draw() {
-    const data = this.localData;
     // console.log("Drawing data: ", data);
-    if (data == null || data.length === 0) {
+    if (this.data == null || this.data.points.length === 0) {
       // TODO: handle no data case
       // console.warn("No data to draw!");
       this.hasData = 0;
@@ -77,15 +67,12 @@ export class SciPlot implements SciComponent {
     }
     this.hasData = 1;
 
-    const startTime = new Date(Date.now() - this.timeViewMinutes * 1000 * 60);
-    const endTime = new Date();
-
-    const initialYMin = d3.min(data, d => { return d.y; });
-    const initialYMax = d3.max(data, d => { return d.y; });
+    const initialYMin = d3.min(this.data.points, d => { return d.y; });
+    const initialYMax = d3.max(this.data.points, d => { return d.y; });
 
     const xScale = d3
       .scaleTime()
-      .domain([startTime, endTime])
+      .domain([this.data.startTime, this.data.endTime])
       .range([this.margin.left, this.width - this.margin.right]);
     const yScale = d3
       .scaleLinear()
@@ -117,14 +104,14 @@ export class SciPlot implements SciComponent {
       .call(yAxis);
 
     const lineGenerator = d3
-      .line<MyData>()
+      .line<Points>()
       .defined(d => { return d !== null; })
       .x(d => { return xScale(Date.parse(d.x)) }) // <<< Parsing strings to dates is slow!
       .y(d => { return yScale(d.y) });
 
     this.svg
       .append("path")
-      .attr("d", lineGenerator(data)) 
+      .attr("d", lineGenerator(this.data.points)) 
       .attr("stroke", this.lineColor)
       .attr("stroke-width", 1)
       .attr("fill", "none");

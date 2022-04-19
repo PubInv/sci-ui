@@ -1,10 +1,10 @@
-import { MyData, SciComponent } from "../interfaces/data.interface";
+import { Points, Data, SciComponent } from "../interfaces/data.interface";
 import { Pirds } from "../interfaces/pirds.interface";
 
 class DataService {
   updateRate = 5000;
   components: Set<SciComponent>;
-
+  private api = "http://localhost:3020/api";
   numComponents = 0;
 
   constructor() {
@@ -38,15 +38,19 @@ class DataService {
     }
 
     const timeViewMinutes = 2;
-    const startTime = new Date(
-      Date.now() - timeViewMinutes * 1000 * 60
-    ).toISOString();
-    const endTime = new Date().toISOString();
+    const startTime = new Date(Date.now() - timeViewMinutes * 1000 * 60);
+    const endTime = new Date();
 
     this.components.forEach(async c => {
-      const data = await this.getData(c.source, startTime, endTime);
-      const processed = this.processData(data);
-      c.update(processed);    
+      const rawData = await this.getData(c.source, startTime.toISOString(), endTime.toISOString());
+      const points = this.processData(rawData);
+      const data: Data = {
+        startTime,
+        endTime,
+        timeViewMinutes,
+        points
+      }
+      c.update(data);
     });
 
     this.components.forEach(c => {
@@ -54,23 +58,22 @@ class DataService {
     });
   }
 
-  processData(data: Pirds[]) {
+  processData(data: Pirds[]): Points[] {
     if (data === undefined) {
       return;
     }
-    let newstuff: MyData[] = [];
+    let points: Points[] = [];
     for (let i = 0; i < data.length; i++) {
-      let a: MyData = { x: data[i].time, y: data[i].val }
-      newstuff.push(a);
+      const p: Points = { x: data[i].time, y: data[i].val }
+      points.push(p);
     }
-    return newstuff;
+    return points;
   }
 
   async getData(table: string, startTime: string, endTime: string): Promise<any>{
     // TODO: CORS
     try {
-      const api = "http://localhost:3020/api";
-      const query = `${api}/${table}/${startTime}/${endTime}`;
+      const query = `${this.api}/${table}/${startTime}/${endTime}`;
       const res = await fetch(query);
       const data = await res.json();
       return data;
