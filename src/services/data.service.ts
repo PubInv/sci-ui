@@ -1,5 +1,6 @@
 import { Points, Data, SciComponent } from "../interfaces/data.interface";
 import { Pirds } from "../interfaces/pirds.interface";
+import { MyHttpService } from "./http.service";
 
 // Currently every component that requests data does so in full.
 // This needs to be optimized to reduce resource load at high fresh rates 
@@ -12,13 +13,11 @@ import { Pirds } from "../interfaces/pirds.interface";
 class DataService {
   updateRate = 5000;
   components: Set<SciComponent>;
-  private api = "http://localhost:3020/api";
   numComponents = 0;
   private timeViewSeconds: number = 120;
 
   constructor() {
     this.components = new Set<SciComponent>();
-
     setInterval(() => {
       this.updateComponents();
     }, this.updateRate);
@@ -42,10 +41,6 @@ class DataService {
 
   setTimeWindow(seconds: number) {
     this.timeViewSeconds = seconds;
-  }
-
-  setApiUrl(url: string) {
-    this.api = url;
   }
 
   updateComponents() {
@@ -91,7 +86,8 @@ class DataService {
 
   async getData(table: string, startTime: string, endTime: string): Promise<any>{
     try {
-      const query = `${this.api}/${table}/${startTime}/${endTime}`;
+      const api = MyHttpService.GetApiUrl();
+      const query = `${api}/${table}/${startTime}/${endTime}`;
       const res = await fetch(query);
       const data = await res.json();
       return data;
