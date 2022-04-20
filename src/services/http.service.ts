@@ -18,10 +18,10 @@ class HttpService {
     };
     try {
       const res = await fetch(url, options);
-      return res;
+      return await res.json();
     } catch(error) {
       console.error(`${url} POST error! ${error}`);
-      return;
+      return null;
     }
   }
 
@@ -29,11 +29,10 @@ class HttpService {
     const url = `${this.api}/${endpoint}`;
     try {
       const res = await fetch(url);
-      const data = await res.json();
-      return data;
+      return await res.json();
     } catch(error) {
       console.error(error);
-      return;
+      return null;
     }
   }
 }

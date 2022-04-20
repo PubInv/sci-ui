@@ -30,7 +30,7 @@ export class SciTerminal {
   }
 
   handleSubmit(event: Event) {
-    event.preventDefault();
+    event.preventDefault(); // Stop the page refreshing.
     // console.log("Submit:", this.terminal);
     const command = this.terminal;
     this.terminal = "";
@@ -43,9 +43,11 @@ export class SciTerminal {
 
   parseTerminal(command: string) {
     console.log("command:", command);
-    MyHttpService.Post("hello", { payload: command });
+    MyHttpService.Post("hello", { payload: command }).then(res => {
+      console.log("post:", res);
+    });
     MyHttpService.Get("hello").then(res => {
-      console.log("res:", res);
+      console.log("get:", res);
     });
   }
 
