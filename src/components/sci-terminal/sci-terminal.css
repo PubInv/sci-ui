@@ -1,0 +1,18 @@
+:host {
+  display: block;
+}
+
+.terminal {
+  border: 1px solid red;
+}
+
+.terminal textarea {
+  width: 100%;
+  border: 1px solid red;
+  resize: none;
+}
+
+.terminal input {
+  width: 100%;
+  border: 1px solid red;
+}

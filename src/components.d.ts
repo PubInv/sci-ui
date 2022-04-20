@@ -13,6 +13,8 @@ export namespace Components {
         "timeViewMinutes": number;
         "width": number;
     }
+    interface SciTerminal {
+    }
 }
 declare global {
     interface HTMLSciPlotElement extends Components.SciPlot, HTMLStencilElement {
@@ -21,8 +23,15 @@ declare global {
         prototype: HTMLSciPlotElement;
         new (): HTMLSciPlotElement;
     };
+    interface HTMLSciTerminalElement extends Components.SciTerminal, HTMLStencilElement {
+    }
+    var HTMLSciTerminalElement: {
+        prototype: HTMLSciTerminalElement;
+        new (): HTMLSciTerminalElement;
+    };
     interface HTMLElementTagNameMap {
         "sci-plot": HTMLSciPlotElement;
+        "sci-terminal": HTMLSciTerminalElement;
     }
 }
 declare namespace LocalJSX {
@@ -33,8 +42,11 @@ declare namespace LocalJSX {
         "timeViewMinutes"?: number;
         "width"?: number;
     }
+    interface SciTerminal {
+    }
     interface IntrinsicElements {
         "sci-plot": SciPlot;
+        "sci-terminal": SciTerminal;
     }
 }
 export { LocalJSX as JSX };
@@ -42,6 +54,7 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "sci-plot": LocalJSX.SciPlot & JSXBase.HTMLAttributes<HTMLSciPlotElement>;
+            "sci-terminal": LocalJSX.SciTerminal & JSXBase.HTMLAttributes<HTMLSciTerminalElement>;
         }
     }
 }

@@ -2,7 +2,7 @@ import { Element, Component, Host, Prop, h, State } from "@stencil/core";
 import { select } from "d3-selection";
 import * as d3 from "d3";
 import { Points, Data, SciComponent } from "../../interfaces/data.interface";
-import { MyDataServiceController } from "../../services/data-service";
+import { MyDataServiceController } from "../../services/data.service";
 
 @Component({
   tag: "sci-plot",
