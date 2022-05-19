@@ -27,7 +27,9 @@
   },
   "dependencies": {
     "@stencil/core": "^2.13.0",
-    "d3": "^7.4.4"
+    "@types/three": "^0.140.0",
+    "d3": "^7.4.4",
+    "three": "^0.140.2"
   },
   "devDependencies": {
     "@types/jest": "^27.0.3",
