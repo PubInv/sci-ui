@@ -2,7 +2,8 @@
   display: block;
 }
 
-/* .canvas {
-  border: 1px solid red;
-  background-color: lightgray;
-} */
+.mycanvas {
+  /* border: 1px solid red; */
+  display: inline-block;
+  width:100%;
+}

@@ -15,6 +15,8 @@ export namespace Components {
     }
     interface SciTerminal {
     }
+    interface SciThree {
+    }
 }
 declare global {
     interface HTMLSciPlotElement extends Components.SciPlot, HTMLStencilElement {
@@ -29,9 +31,16 @@ declare global {
         prototype: HTMLSciTerminalElement;
         new (): HTMLSciTerminalElement;
     };
+    interface HTMLSciThreeElement extends Components.SciThree, HTMLStencilElement {
+    }
+    var HTMLSciThreeElement: {
+        prototype: HTMLSciThreeElement;
+        new (): HTMLSciThreeElement;
+    };
     interface HTMLElementTagNameMap {
         "sci-plot": HTMLSciPlotElement;
         "sci-terminal": HTMLSciTerminalElement;
+        "sci-three": HTMLSciThreeElement;
     }
 }
 declare namespace LocalJSX {
@@ -44,9 +53,12 @@ declare namespace LocalJSX {
     }
     interface SciTerminal {
     }
+    interface SciThree {
+    }
     interface IntrinsicElements {
         "sci-plot": SciPlot;
         "sci-terminal": SciTerminal;
+        "sci-three": SciThree;
     }
 }
 export { LocalJSX as JSX };
@@ -55,6 +67,7 @@ declare module "@stencil/core" {
         interface IntrinsicElements {
             "sci-plot": LocalJSX.SciPlot & JSXBase.HTMLAttributes<HTMLSciPlotElement>;
             "sci-terminal": LocalJSX.SciTerminal & JSXBase.HTMLAttributes<HTMLSciTerminalElement>;
+            "sci-three": LocalJSX.SciThree & JSXBase.HTMLAttributes<HTMLSciThreeElement>;
         }
     }
 }
